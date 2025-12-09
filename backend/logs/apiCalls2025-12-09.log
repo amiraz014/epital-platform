@@ -1,0 +1,6 @@
+{
+  message: 'Server is running on http://localhost:8080',
+  level: 'info',
+  label: 'WiMapper API Call',
+  timestamp: 'Dec-09-2025 10:02:57'
+}
