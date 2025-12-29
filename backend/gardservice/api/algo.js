@@ -86,7 +86,7 @@ function getRandomSubarray(arr, n) {
 }
 
 function getTimeForType(type) {
-  return type === 'MORNING' ? '08:00:00' : '20:00:00';
+  return type === 'MATIN' ? '08:00:00' : '20:00:00';
 }
 
 
@@ -132,8 +132,8 @@ router.post('/guard-algo', async (req, res) => {
 
     
     for (const e of employees) {
-      const morning = await countGuardsByEmployeeAndType(e.ide, 'MORNING');
-      const evening = await countGuardsByEmployeeAndType(e.ide, 'EVENING');
+      const morning = await countGuardsByEmployeeAndType(e.ide, 'MATIN');
+      const evening = await countGuardsByEmployeeAndType(e.ide, 'SOIR');
       morningCount[e.ide] = morning;
       eveningCount[e.ide] = evening;
     }
@@ -171,7 +171,7 @@ router.post('/guard-algo', async (req, res) => {
 
       const dayOfMonth = current.date();
       const types =
-        dayOfMonth % 2 === 0 ? ['MORNING', 'EVENING'] : ['EVENING', 'MORNING'];
+        dayOfMonth % 2 === 0 ? ['MATIN', 'SOIR'] : ['MATIN', 'SOIR'];
 
       for (const type of types) {
         for (const sector of SECTORS) {
@@ -181,7 +181,7 @@ router.post('/guard-algo', async (req, res) => {
          
             .filter(e => {
               const diff = (morningCount[e.ide] || 0) - (eveningCount[e.ide] || 0);
-              if (type === 'MORNING') return diff <= 0;
+              if (type === 'MATIN') return diff <= 0;
               return diff >= 0;
             })
             
@@ -201,8 +201,8 @@ router.post('/guard-algo', async (req, res) => {
                 (morningCount[a.ide] || 0) - (eveningCount[a.ide] || 0);
               const diffB =
                 (morningCount[b.ide] || 0) - (eveningCount[b.ide] || 0);
-              const scoreA = type === 'MORNING' ? -diffA : diffA;
-              const scoreB = type === 'MORNING' ? -diffB : diffB;
+              const scoreA = type === 'MATIN' ? -diffA : diffA;
+              const scoreB = type === 'MATIN' ? -diffB : diffB;
               return scoreA - scoreB;
             })[0];
 
@@ -230,7 +230,7 @@ router.post('/guard-algo', async (req, res) => {
           sectorHistory[candidate.ide].add(sector);
           
 
-          if (type === 'MORNING') {
+          if (type === 'MATIN') {
             morningCount[candidate.ide] =
               (morningCount[candidate.ide] || 0) + 1;
           } else {
