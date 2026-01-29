@@ -1,0 +1,71 @@
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sirius-postgres
+    environment:
+      POSTGRES_DB: sirius_db
+      POSTGRES_USER: sirius_user
+      POSTGRES_PASSWORD: sirius_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sirius-network
+
+  gardservice:
+    build:
+      context: ./backend/gardservice
+      dockerfile: Dockerfile
+    container_name: sirius-gardservice
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: sirius_db
+      PGUSER: sirius_user
+      PGPASSWORD: sirius_password
+    ports:
+      - "3001:3000"
+    depends_on:
+      - postgres
+    networks:
+      - sirius-network
+
+  viewservice:
+    build:
+      context: ./backend/viewservice
+      dockerfile: Dockerfile
+    container_name: sirius-viewservice
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: sirius_db
+      PGUSER: sirius_user
+      PGPASSWORD: sirius_password
+    ports:
+      - "3002:3000"
+    depends_on:
+      - postgres
+    networks:
+      - sirius-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sirius-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gardservice
+      - viewservice
+    networks:
+      - sirius-network
+
+volumes:
+  postgres_data:
+
+networks:
+  sirius-network:
+    driver: bridge
